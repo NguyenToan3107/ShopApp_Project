@@ -56,7 +56,7 @@ CREATE TABLE products (
     name VARCHAR(350) COMMENT 'Tên sản phẩm',
     price FLOAT NOT NULL CHECK (price >= 0),
     thumbnail VARCHAR(300) DEFAULT '',
-    description LONGTEXT DEFAULT '',
+    description LONGTEXT,
     created_at DATETIME,
     updated_at DATETIME,
     category_id INT,
