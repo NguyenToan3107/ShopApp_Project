@@ -1,7 +1,12 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.ProductDTO;
+import com.project.shopapp.dtos.ProductImageDTO;
+import com.project.shopapp.models.Product;
+import com.project.shopapp.models.ProductImage;
+import com.project.shopapp.services.ProductService;
 import jakarta.validation.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +28,14 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("${api.prefix}/products")
+@RequiredArgsConstructor
 public class ProductController {
+    private final ProductService productService;
 
-    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createProduct(@Valid @ModelAttribute ProductDTO productDTO,
+    @PostMapping("")
+    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDTO productDTO,
                                            BindingResult result) {
         try {
-//                                           @RequestPart("file") MultipartFile file,
             if(result.hasErrors()) {
                 List<String> errorMessages = result.getFieldErrors()
                         .stream()
@@ -37,9 +43,27 @@ public class ProductController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            System.out.println(productDTO);
-            List<MultipartFile> files = productDTO.getFiles();
-            files = files == null ? new ArrayList<MultipartFile>() : files;
+
+            // create product with product service
+            Product newProduct = productService.createProduct(productDTO);
+
+            return ResponseEntity.ok(newProduct);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadImages(
+            @PathVariable("id") Long id,
+            @ModelAttribute("files") List<MultipartFile> files) {
+
+
+        Product existingProduct = null;
+        try {
+            existingProduct = productService.getProductById(id);
+            List<ProductImage> productImages = new ArrayList<>();
+
+            files = files == null ? new ArrayList<>() : files;
 
             for (MultipartFile file : files) {
                 // to check size and format
@@ -58,11 +82,18 @@ public class ProductController {
                 }
                 // save file and update thumbnail in DTO;
                 String filename = storeFile(file); // replace function with your code to save file
-                // save into product object un db -> will be done later
-                // save into product_images table
+                // save into product object on db -> will be done later
+                ProductImage productImage = productService.createProductImage(
+                        existingProduct.getId(),
+                        ProductImageDTO
+                                .builder()
+                                .imageUrl(filename)
+                                .build()
+                );
+                productImages.add(productImage);
             }
-            return ResponseEntity.ok("Product created successfully");
-        }catch (Exception e) {
+            return ResponseEntity.ok().body(productImages);
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

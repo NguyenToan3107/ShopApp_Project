@@ -27,5 +27,5 @@ public class ProductDTO {
     @JsonProperty("category_id")
     private Long categoryId;
 
-    public List<MultipartFile> files;
+//    public List<MultipartFile> files;
 }
