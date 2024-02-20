@@ -4,9 +4,14 @@ import com.project.shopapp.dtos.ProductDTO;
 import com.project.shopapp.dtos.ProductImageDTO;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.ProductImage;
+import com.project.shopapp.responses.ProductListResponse;
+import com.project.shopapp.responses.ProductResponse;
 import com.project.shopapp.services.ProductService;
 import jakarta.validation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -133,9 +138,22 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<String> getProducts (@RequestParam("page") int page,
-                                                    @RequestParam("limit") int limit) {
-        return ResponseEntity.ok("getProducts");
+    public ResponseEntity<ProductListResponse> getProducts (@RequestParam("page") int page,
+                                                            @RequestParam("limit") int limit) {
+        // create Pageable from info page and limit
+        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
+
+        Page<ProductResponse> productPage = productService.getAllProducts(pageRequest);
+
+        // get total page
+        List<ProductResponse> products = productPage.getContent();
+        int totalPages = productPage.getTotalPages();
+
+        return ResponseEntity.ok(ProductListResponse
+                                    .builder()
+                                    .products(products)
+                                    .totalPages(totalPages)
+                                    .build());
     }
 
     @GetMapping("/{id}")
