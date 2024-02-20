@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -57,7 +58,6 @@ public class ProductController {
             @PathVariable("id") Long id,
             @ModelAttribute("files") List<MultipartFile> files) {
 
-
         Product existingProduct = null;
         try {
             existingProduct = productService.getProductById(id);
@@ -65,12 +65,16 @@ public class ProductController {
 
             files = files == null ? new ArrayList<>() : files;
 
+            if(files.size() > ProductImage.MAXIMUM_IMAGES_PER_PRODUCT) {
+                return ResponseEntity.badRequest().body("You can only upload maximun 5 images");
+            }
+
             for (MultipartFile file : files) {
+                if(file.getSize() == 0) {
+                    continue;
+                }
                 // to check size and format
                 if(file.getSize() > 10 * 1024 * 1024) {
-                    if(file.getSize() == 0) {
-                        continue;
-                    }
                     return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
                             .body("File is too large! Maximun size is 10MB");
                 }
@@ -98,8 +102,16 @@ public class ProductController {
         }
     }
 
+    private boolean isImageFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        return contentType != null && contentType.startsWith("image/");
+    }
+
     private String storeFile(MultipartFile file)  throws IOException {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        if(!isImageFile(file) || file.getOriginalFilename() == null) {
+            throw new IOException("Invalid image format");
+        }
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
         // add UUID before file name to ensure file name is unique
         String uniqueFilename = UUID.randomUUID().toString() + "_" + fileName;
