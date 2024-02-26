@@ -28,7 +28,7 @@ public class ProductService implements IProductService{
     private final ProductImageRepository productImageRepository;
 
     @Override
-    public Product createProduct(ProductDTO productDTO) throws DataNotFoundException {
+    public Product createProduct(ProductDTO productDTO) throws Exception {
         Category existingCategory = categoryRepository.findById(productDTO.getCategoryId())
                 .orElseThrow(() -> new DataNotFoundException(
                         "Cannot find category with id = " + productDTO.getCategoryId()));
@@ -38,7 +38,8 @@ public class ProductService implements IProductService{
                 .name(productDTO.getName())
                 .price(productDTO.getPrice())
                 .thumbnail(productDTO.getThumbnail())
-                .category( existingCategory)
+                .description(productDTO.getDescription())
+                .category(existingCategory)
                 .build();
 
         return productRepository.save(newProduct);
@@ -52,20 +53,9 @@ public class ProductService implements IProductService{
 
     @Override
     public Page<ProductResponse> getAllProducts(PageRequest pageRequest) {
-        return productRepository.findAll(pageRequest).map(product -> {
-                ProductResponse productResponse =  ProductResponse
-                        .builder()
-                        .name(product.getName())
-                        .price(product.getPrice())
-                        .thumbnail(product.getThumbnail())
-                        .description(product.getDescription())
-                        .categoryId(product.getCategory().getId())
-                        .build();
-                productResponse.setCreatedAt(product.getCreatedAt());
-                productResponse.setUpdated_at(product.getUpdatedAt());
-                return productResponse;
-            }
-        );
+        return productRepository
+                .findAll(pageRequest)
+                .map(ProductResponse::fromProduct);
     }
 
     @Override
