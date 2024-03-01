@@ -10,7 +10,7 @@ import java.util.List;
 public interface IOrderService {
     Order createOrder(OrderDTO orderDTO) throws Exception;
     Order getOrder(Long id);
-    Order updateOeder(Long id, OrderDTO orderDTO);
+    Order updateOrder(Long id, OrderDTO orderDTO);
     void deleteOrder(Long id);
     List<Order> getAllOrders(Long userId);
 }

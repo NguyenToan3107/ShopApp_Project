@@ -66,7 +66,7 @@ public class OrderService implements IOrderService{
     }
 
     @Override
-    public Order updateOeder(Long id, OrderDTO orderDTO) {
+    public Order updateOrder(Long id, OrderDTO orderDTO) {
         return null;
     }
 
