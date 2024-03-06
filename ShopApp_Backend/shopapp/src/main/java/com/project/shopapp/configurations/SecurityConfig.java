@@ -24,7 +24,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         return phoneNumber -> userRepository
                     .findByPhoneNumber(phoneNumber)
-                    .orElseThrow(() -> new UsernameNotFoundException("Cannot fund user with phone number = "+ phoneNumber));
+                    .orElseThrow(() -> new UsernameNotFoundException("Cannot find user with phone number = "+ phoneNumber));
     }
 
     @Bean
@@ -40,6 +40,7 @@ public class SecurityConfig {
         return authenticationProvider;
     }
 
+    //
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
