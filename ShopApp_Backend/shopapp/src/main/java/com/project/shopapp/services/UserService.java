@@ -75,8 +75,9 @@ public class UserService implements IUserService{
                 throw new BadCredentialsException("Wrong phone number or password");
             }
         }
+        // authentication of spring
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                phoneNumber, password
+                phoneNumber, password, existingUser.getAuthorities()
         );
         // authenticate with java Spring security
         authenticationManager.authenticate(authenticationToken);
