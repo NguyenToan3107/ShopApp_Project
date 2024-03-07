@@ -66,7 +66,11 @@ public class OrderService implements IOrderService{
     }
 
     @Override
-    public Order updateOrder(Long id, OrderDTO orderDTO) {
+    public Order updateOrder(Long id, OrderDTO orderDTO) throws Exception {
+        // check user id is existed
+        User user = userRepository
+                .findById(orderDTO.getUserId())
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + orderDTO.getUserId()));
         return null;
     }
 

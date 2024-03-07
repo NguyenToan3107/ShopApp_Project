@@ -52,7 +52,12 @@ public class OrderController {
             @Valid @PathVariable Long id,
             @Valid @RequestBody OrderDTO orderDTO
     ) {
-        return ResponseEntity.ok("Updated 1 order");
+        try {
+            Order order = orderService.updateOrder(id, orderDTO);
+            return ResponseEntity.ok(order);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
