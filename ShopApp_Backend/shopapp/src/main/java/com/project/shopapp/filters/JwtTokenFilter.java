@@ -1,6 +1,7 @@
 package com.project.shopapp.filters;
 
 import com.project.shopapp.components.JwtTokenUtil;
+import com.project.shopapp.models.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,7 +49,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             if (phoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(phoneNumber);
+                User userDetails = (User) userDetailsService.loadUserByUsername(phoneNumber);
                 if (jwtTokenUtil.validateToken(token, userDetails)) {
                     // create object to verify with security
                     UsernamePasswordAuthenticationToken authenticationToken =
