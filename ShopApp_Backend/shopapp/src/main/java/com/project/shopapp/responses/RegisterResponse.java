@@ -1,7 +1,7 @@
 package com.project.shopapp.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.project.shopapp.models.Category;
+import com.project.shopapp.models.User;
 import lombok.*;
 
 @Getter
@@ -9,10 +9,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateCategoryResponse {
+public class RegisterResponse {
     @JsonProperty("message")
     private String message;
 
-    @JsonProperty("category")
-    private Category category;
+    @JsonProperty("user")
+    private User user;
 }

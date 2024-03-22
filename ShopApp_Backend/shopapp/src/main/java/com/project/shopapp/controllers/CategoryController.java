@@ -1,9 +1,11 @@
 package com.project.shopapp.controllers;
 
+import com.project.shopapp.components.LocalizationUtils;
 import com.project.shopapp.dtos.CategoryDTO;
 import com.project.shopapp.models.Category;
 import com.project.shopapp.responses.UpdateCategoryResponse;
 import com.project.shopapp.services.CategoryService;
+import com.project.shopapp.utils.MessageKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +28,7 @@ import java.util.Locale;
 public class CategoryController {
 
     private final CategoryService categoryService;
-    private final MessageSource messageSource;
-    private final LocaleResolver localeResolver;
+    private final LocalizationUtils localizationUtils;
 
     @GetMapping("")
     public ResponseEntity<List<Category>> getAllCategories(@RequestParam("page") int page,
@@ -48,26 +49,24 @@ public class CategoryController {
             return ResponseEntity.badRequest().body(errorMessage);
         }
         categoryService.createCategory(categoryDTO);
-        return ResponseEntity.ok("This is insertCategory " + categoryDTO);
+        return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.INSERT_CATEGORY_SUCCESSFULLY));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UpdateCategoryResponse> updateCategory(@PathVariable(name = "id") Long id,
-                                                                 @Valid @RequestBody CategoryDTO categoryDTO,
-                                                                 HttpServletRequest request) {
+                                                                 @Valid @RequestBody CategoryDTO categoryDTO) {
 
-        categoryService.updateCategory(id, categoryDTO);
-        Locale locale = localeResolver.resolveLocale(request);
-
+        Category category = categoryService.updateCategory(id, categoryDTO);
         return ResponseEntity.ok(UpdateCategoryResponse.builder()
-                .message(messageSource.getMessage("category.update_category.update_successfully", null, locale))
+                .message(localizationUtils.getLocalizedMessage(MessageKeys.UPDATED_CATEGORY_SUCCESSFULLY))
+                .category(category)
                 .build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable(name = "id") Long id) {
         categoryService.deleteCategory(id);
-        return ResponseEntity.ok("delete category with id = " + id);
+        return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_CATEGORY_SUCCESSFULLY, id));
     }
 
 }

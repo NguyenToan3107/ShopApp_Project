@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class LoginResponse {
-    @JsonProperty("mesage")
+    @JsonProperty("message")
     private String message;
 
     @JsonProperty("token")
