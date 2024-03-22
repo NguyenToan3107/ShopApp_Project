@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { HomeComponent } from './home/home.component';
@@ -27,7 +28,8 @@ import { DetailProductComponent } from './detail-product/detail-product.componen
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [
@@ -35,8 +37,8 @@ import { DetailProductComponent } from './detail-product/detail-product.componen
     // OrderComponent,
     // OrderConfirmComponent
     // DetailProductComponent
-    // LoginComponent
-    RegisterComponent
+    LoginComponent
+    // RegisterComponent
   ]
 })
 export class AppModule { }
