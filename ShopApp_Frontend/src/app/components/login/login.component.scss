@@ -11,6 +11,8 @@
     align-items: center;
     justify-content: center;
 }
+
+
 .login-header {
     text-align: center;
     color: rgb(105, 244, 181);
@@ -100,6 +102,11 @@
     padding: 10px 0;
     margin-top: 20px;
     border: none;
+}
+
+.login-button:hover {
+    background: linear-gradient(to right, rgb(225, 64, 180), rgb(126, 43, 237));
+    opacity: 0.8;
 }
 .divider {
     height: 1px;
