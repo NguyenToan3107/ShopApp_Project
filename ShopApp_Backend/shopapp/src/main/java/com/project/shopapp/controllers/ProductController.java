@@ -6,6 +6,7 @@ import com.project.shopapp.dtos.ProductImageDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.ProductImage;
+import com.project.shopapp.responses.ApiResponse;
 import com.project.shopapp.responses.ProductListResponse;
 import com.project.shopapp.responses.ProductResponse;
 import com.project.shopapp.services.ProductService;
@@ -159,12 +160,14 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<ProductListResponse> getProducts (@RequestParam("page") int page,
-                                                            @RequestParam("limit") int limit) {
+    public ResponseEntity<ProductListResponse> getProducts (@RequestParam(defaultValue = "0", name = "page") int page,
+                                                            @RequestParam(defaultValue = "10", name = "limit") int limit,
+                                                            @RequestParam(defaultValue = "0", name = "category_id") Long categoryId,
+                                                            @RequestParam(defaultValue = "", name = "keyword") String keyword) {
         // create Pageable from info page and limit
-        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
+        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").ascending());
 
-        Page<ProductResponse> productPage = productService.getAllProducts(pageRequest);
+        Page<ProductResponse> productPage = productService.getAllProducts(keyword, categoryId, pageRequest);
 
         // get total page
         List<ProductResponse> products = productPage.getContent();
@@ -197,10 +200,10 @@ public class ProductController {
         }
     }
 
-//    @PostMapping("/generateFakeProducts")
+    @PostMapping("/generateFakeProducts")
     private ResponseEntity<String> generateFakeProducts() {
         Faker faker = new Faker();
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < 1000; i++) {
             String productName = faker.commerce().productName();
             if(productService.existsByName(productName)) {
                 continue;

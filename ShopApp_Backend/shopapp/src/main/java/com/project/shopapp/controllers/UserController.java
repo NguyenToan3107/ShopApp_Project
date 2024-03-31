@@ -7,7 +7,7 @@ import com.project.shopapp.responses.LoginResponse;
 import com.project.shopapp.responses.RegisterResponse;
 import com.project.shopapp.services.UserService;
 import com.project.shopapp.components.LocalizationUtils;
-import com.project.shopapp.utils.MessageKeys;
+import com.project.shopapp.utils.Contains;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,7 +39,7 @@ public class UserController {
                         .map(FieldError::getDefaultMessage)
                         .toList();
                 return ResponseEntity.badRequest().body(RegisterResponse.builder()
-                                .message(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_FAILED, errorMessages))
+                                .message(localizationUtils.getLocalizedMessage(Contains.REGISTER_FAILED, errorMessages))
                         .build());
             }
 
@@ -47,19 +47,19 @@ public class UserController {
                 return ResponseEntity.badRequest()
                         .body(RegisterResponse
                                 .builder()
-                                .message(localizationUtils.getLocalizedMessage(MessageKeys.PASSWORD_NOT_MATCH))
+                                .message(localizationUtils.getLocalizedMessage(Contains.PASSWORD_NOT_MATCH))
                                 .build());
             }
             User user = userService.createUser(userDTO);
             return ResponseEntity.ok(RegisterResponse
                     .builder()
-                            .message(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_SUCCESSFULLY))
+                            .message(localizationUtils.getLocalizedMessage(Contains.REGISTER_SUCCESSFULLY))
                             .user(user)
                     .build());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(RegisterResponse
                     .builder()
-                    .message(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_FAILED, e.getMessage()))
+                    .message(localizationUtils.getLocalizedMessage(Contains.REGISTER_FAILED, e.getMessage()))
                     .build());
         }
     }
@@ -72,13 +72,13 @@ public class UserController {
                     userLoginDTO.getRoleId());
 
             return ResponseEntity.ok(LoginResponse.builder()
-                    .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
+                    .message(localizationUtils.getLocalizedMessage(Contains.LOGIN_SUCCESSFULLY))
                     .token(token)
                     .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     LoginResponse.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage()))
+                            .message(localizationUtils.getLocalizedMessage(Contains.LOGIN_FAILED, e.getMessage()))
                             .build());
         }
     }

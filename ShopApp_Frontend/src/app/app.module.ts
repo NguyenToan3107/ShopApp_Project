@@ -40,11 +40,11 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
     }
   ],
   bootstrap: [
-    // HomeComponent,
+    HomeComponent
     // OrderComponent,
     // OrderConfirmComponent
     // DetailProductComponent
-    LoginComponent
+    // LoginComponent
     // RegisterComponent
   ]
 })

@@ -20,5 +20,4 @@ public class LocalizationUtils {
         Locale locale = localeResolver.resolveLocale(request);
         return messageSource.getMessage(messageKey, params, locale);
     }
-
 }

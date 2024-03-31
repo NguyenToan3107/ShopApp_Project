@@ -11,6 +11,7 @@ import com.project.shopapp.responses.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -66,17 +67,35 @@ public class OrderService implements IOrderService{
     }
 
     @Override
+    @Transactional
     public Order updateOrder(Long id, OrderDTO orderDTO) throws Exception {
+        Order order = orderRepository
+                .findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find order with id: " + id));
         // check user id is existed
         User user = userRepository
                 .findById(orderDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + orderDTO.getUserId()));
-        return null;
+
+        // tạo 1 luồng bàng ánh xạ riêng để kiểm soát việc ánh xạ
+        modelMapper.typeMap(OrderDTO.class, Order.class)
+                .addMappings(mapper -> mapper.skip(Order::setId));
+
+        // cập nhật các trường của đơn hàng từ orderDTO
+        modelMapper.map(orderDTO, order);
+        order.setUser(user);
+        return orderRepository.save(order);
     }
 
     @Override
+    @Transactional
     public void deleteOrder(Long id) {
+        Order order = orderRepository.findById(id).orElse(null);
 
+        if(order != null) {
+            order.setActive(false);
+            orderRepository.save(order);
+        }
     }
 
     @Override
