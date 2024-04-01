@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -112,7 +113,7 @@ public class ProductController {
     }
 
     @GetMapping("/images/{imageName}")
-    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
+    public ResponseEntity<?> viewImage(@PathVariable String imageName) throws MalformedURLException {
         try {
             Path imagePath = Paths.get("uploads/" + imageName);
             UrlResource resource = new UrlResource(imagePath.toUri());
@@ -122,7 +123,9 @@ public class ProductController {
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(resource);
             }else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(new UrlResource(Paths.get("uploads/noproduct.jpg").toUri()));
             }
         }catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -161,7 +164,7 @@ public class ProductController {
 
     @GetMapping("")
     public ResponseEntity<ProductListResponse> getProducts (@RequestParam(defaultValue = "0", name = "page") int page,
-                                                            @RequestParam(defaultValue = "10", name = "limit") int limit,
+                                                            @RequestParam(defaultValue = "12", name = "limit") int limit,
                                                             @RequestParam(defaultValue = "0", name = "category_id") Long categoryId,
                                                             @RequestParam(defaultValue = "", name = "keyword") String keyword) {
         // create Pageable from info page and limit
@@ -200,7 +203,7 @@ public class ProductController {
         }
     }
 
-    @PostMapping("/generateFakeProducts")
+//    @PostMapping("/generateFakeProducts")
     private ResponseEntity<String> generateFakeProducts() {
         Faker faker = new Faker();
         for (int i = 0; i < 1000; i++) {
